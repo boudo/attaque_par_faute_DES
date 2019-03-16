@@ -1,0 +1,44 @@
+Question 1 (Attaque par faute sur le DES)
+
+	Décrire le plus précisément ce que vous pouvez sur le principe d’une attaque par fautes contre le DES.
+	On supposera que l’attaquant est capable d’effectuer une faute sur la valeur de sortie R 15 du 15 ème tour
+
+
+
+
+Question 2 (Application concrète)
+
+	1. Décrire précisément ce que vous faites pour retrouver la clé.
+
+
+	1. Donnez les 48 bits de clé que vous obtenez grâce à cette
+	   attaque par fautes.
+
+
+
+Question 3 (Retrouver la clé complète du DES)
+
+	Dans la question précédente, on obtient 48 bits de la clé (qui fait au total 56 bits).
+
+	1. Expliquer comment on peut retrouver les 8 bits manquants.
+
+
+
+
+
+	2. Faites-le, et donner ainsi la valeur complète de la clé qui
+	   vous a été assignée.
+
+
+
+
+Question 4 (plus difficile) (Fautes sur les tours précédents)
+
+	Les questions précédentes supposaient que l’attaquant provoquait une faute sur la valeur de sortie R 15 du 15 ème tour. Décrivez le plus précisément possible le fonctionnement d’une attaque en supposant cette fois que la faute est provoquée sur la valeur de sortie R 14 du 14 ème tour. Même question si la faute est provoquée sur la valeur de sortie R 13 du 13 ème tour. Et ainsi de suite. Estimez à chaque fois la complexité de l’attaque. Jusqu’à quel tour l’attaque est-elle réaliste ?
+
+
+
+
+Question 5 (Contre-mesures)
+
+	Imaginer une ou plusieurs contre-mesures contre ce type d’attaque par fautes sur le DES. Décrivez la(les) le plus précisément possible et analysez l’impact sur le temps de calcul (par rapport à une implémentation non sécurisée).
