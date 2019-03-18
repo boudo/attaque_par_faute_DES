@@ -1,5 +1,5 @@
-// #include "definitions.h"
-#include "resultats.h"
+#include "attaque.h"
+// #include "resultats.h"
 #include "fonctions.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -55,13 +55,15 @@ int main(int argc, char const *argv[])
 	// printf("\n%llX\n", messageClair);
 	
 
-	unsigned long long t = 0xFC754C3C4D21BC3A;
-	unsigned long R16;
-	unsigned long L16;
-	get_R16_L16(t, &R16, &L16);
-	printf("%lX\n", R16);
-	printf("%lX\n", L16);
+	// unsigned long long t = 0xFC754C3C4D21BC3A;
+	// unsigned long R16;
+	// unsigned long L16;
+	// get_R16_L16(t, &R16, &L16);
+	// printf("%lX\n", R16);
+	// printf("%lX\n", L16);
 
+	attaqueSbox();
+	// printf("%d\n", puissance(2, 5));
 	printf("\ntout marche bien\n");
 	return 0;
 }
