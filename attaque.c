@@ -6,30 +6,50 @@
 #include <stdlib.h>
 #include <string.h>
 
-void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], int verification[], int*** valPossibles)
+void attaqueBox(int numChif, int numero[2], int expanJuste[], int expanFaux[], int verification[], int valPossibles[31][8][64])
 {
+	// int** tab;
 	int nbBits = 6;
 	int resJuste = -1;
 	int resFaux = -1;
 	int rechExhau = puissance(2, nbBits);
 	printf("rechExhau = %d\n", rechExhau);
 	for(int i = 0; i <= rechExhau ; i++)
-	{
-		resJuste = appliquer(SBox[ numero[1] ], expanJuste[ numero[1] ]);
-		resFaux = appliquer(SBox[ numero[1] ], expanFaux[ numero[1] ]);
-
-		if( (resJuste ^ resFaux)  == verification[ numero[1] ])
+	{	
+		// printf("numero = %d\n", numero[0]);
+		// printf("putttttttttttt\n");
+		// printf("sb_0 %x\n", SBox[1]);
+		// tab = SBox[1];
+		// printf("tab_0_2 %d\n", tab[0][2]);
+		// printf(" val1 %d\n", expanJuste[ numero[0] ]);
+		resJuste = appliquer(SBox, (expanJuste[ numero[0] ] ^ i), numero[0]);
+		// printf("resJuste = %d\n", resJuste);
+		resFaux = appliquer(SBox, (expanFaux[ numero[0] ] ^ i), numero[0]);
+		// printf("resFaux = %d\n", resFaux);
+		// printf(" val2 %d\n", expanFaux[ numero[0] ]);
+		// printf("rien ici************\n");
+		// printf("xor = %d\n", (int)(resJuste ^ resFaux));
+		// printf("ver = %d\n",verification[ numero[0] ]);
+		if( (resJuste ^ resFaux)  == verification[ numero[0] ])
 		{
-			valPossibles[numChif][ numero[1] ][i] = i;
+			valPossibles[numChif][ numero[0] ][i] = i;
+			printf("\nnum %d = %d\n\n",numero[0], i );
 		}
-		if(numero[2] > -1)
+		if(numero[1] > -1)
 		{
-			resJuste = appliquer(SBox[ numero[2] ], expanJuste[ numero[2] ]);
-			resFaux = appliquer(SBox[ numero[2] ], expanFaux[ numero[2] ]);
-
-			if( (resJuste ^ resFaux)  == verification[ numero[2] ])
+		// 	printf("numero = %d\n", numero[1]);
+		// 	printf(" val1 %d\n", expanJuste[ numero[1] ]);
+		// 	printf(" val2 %d\n", expanFaux[ numero[1] ]);
+			resJuste = appliquer(SBox, (expanJuste[ numero[1] ] ^ i), numero[1]);
+			// printf("resJuste = %d\n", resJuste);
+			resFaux = appliquer(SBox, (expanFaux[ numero[1] ] ^ i), numero[1]);
+			// printf("resFaux = %d\n", resFaux);
+			// printf("xor = %d\n", (int)(resJuste ^ resFaux));
+			// printf("ver = %d\n",verification[ numero[1] ]);
+			if( (resJuste ^ resFaux)  == verification[ numero[1] ])
 			{
-				valPossibles[numChif][ numero[2] ][i] = i;
+				valPossibles[numChif][ numero[1] ][i] = i;
+				printf("\nnum %d = %d\n\n",numero[1], i );
 			}
 		}
 	}
@@ -74,6 +94,9 @@ void attaqueSbox()
 	// verification = permutation(PInv, binaire);
 	ver = permutation(PInv, binaire);
 	printf("%s\n", ver);
+	printf("%lX\n", R15);
+	char* R15bin = bin32(R15);
+	printf("%s\n", R15bin);
 	taille = strlen(ver);
 	binDecimals = binToDecimal(ver, taille, 4);
 	for (int i = 0; i < taille/4; ++i)
@@ -82,6 +105,14 @@ void attaqueSbox()
 	}printf("\n");
 	verification = binToHexa32(ver);
 	printf("%lX\n", verification);
+	char* R15binaire = bin32(R15);
+	char* R15Fauxbinaire = bin32(R15Faux);
+	char*  R15binaireE = expansion(E, R15binaire);
+	char*  R15FauxbinaireE = expansion(E, R15Fauxbinaire);
+	int* expanJuste = binToDecimal(R15binaireE, 48, 6);
+	int* expanFaux = binToDecimal(R15FauxbinaireE, 48, 6);
+	int valPossibles[31][8][64] = {0};
+	attaqueBox(0, propa, expanJuste, expanFaux, binDecimals, valPossibles);
 	// for (int i = 0; i < 32; ++i)
 	// {
 	// 	chifrFaux = messageChifrFaux[i];
@@ -98,5 +129,12 @@ void attaqueSbox()
 	free(ver);
 	free(binDecimals);
 	free(propa);
+	free(R15binaire);
+	free(R15Fauxbinaire);
+	free(R15binaireE);
+	free(R15FauxbinaireE);
+	free(expanJuste);
+	free(expanFaux);
+	free(R15bin);
 
 }

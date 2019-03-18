@@ -4,7 +4,7 @@
 
 void attaqueSbox();
 
-void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], int verification[], int*** valPossibles);
+void attaqueBox(int numChif, int numero[2], int expanJuste[], int expanFaux[], int verification[], int valPossibles[31][8][64]);
 
 
 

@@ -19,6 +19,7 @@ char* expansion(int E[], char* binaire)
 	{
 		expan[i] = binaire[E[i] - 1];
 	}
+	printf("exp = %s\n", expan);
 	return expan;
 }
 
@@ -48,7 +49,7 @@ int* binToDecimal(char* bin, int taille, int nbBits)
 	int val = 0;
 	int tmp = puissance(2, nbBits - 1);
 	T = taille / nbBits;
-	// printf("T = %d\n", T);
+	printf("T = %d\n", T);
 	decimals =  malloc(T * sizeof(int));
 	if(decimals == NULL)
 	{
@@ -71,7 +72,7 @@ int* binToDecimal(char* bin, int taille, int nbBits)
 		}
 		decimals[k++] = val;
 		i += nbBits;
-		tmp = 8;
+		tmp = puissance(2, nbBits - 1);
 		val = 0;
 	}
 	// printf("taille de decimals = %d\n", T);
@@ -233,11 +234,11 @@ unsigned long binToHexa32(char* binaire)
 int posiBitFauter32(unsigned long hexadecimal)
 {
 	unsigned long tmpHexa = hexadecimal;
-	int position = 0;
+	int position = 33;
 	// int position = -1;
 	while(tmpHexa)
 	{
-		position++;
+		position--;
 		tmpHexa = tmpHexa >> 1;
 	}
 	printf("posi = %d\n", position);
@@ -297,8 +298,9 @@ int puissance(int a, int b) // a != 0
 	return a * puissance(a, b - 1);
 }
 
-int appliquer(int SBox[4][16], int expanVal)
+int appliquer(int SBox[][4][16], int expanVal, int numSBox)
 {
+	// printf("dans appliquer\n");
 	// int nbBits = 6;
 	int r = -1;
 	int c = -1;
@@ -318,5 +320,5 @@ int appliquer(int SBox[4][16], int expanVal)
 	r = (2 * b1) + b6;
 	c = expanVal & mask2;
 
-	return SBox[r][c];
+	return SBox[numSBox][r][c];
 }

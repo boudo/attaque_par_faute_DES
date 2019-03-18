@@ -23,6 +23,6 @@ int* propaBitFaux(int position);
 
 int puissance(int a, int b);
 
-int appliquer(int SBox[4][16], int expanVal);
+int appliquer(int SBox[][4][16], int expanVal, int numSBox);
 
 #endif
