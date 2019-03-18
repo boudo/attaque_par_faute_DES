@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], int verification[], int* valPossibles[][][])
+void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], int verification[], int*** valPossibles)
 {
 	int nbBits = 6;
 	int resJuste = -1;
@@ -18,18 +18,18 @@ void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], in
 		resJuste = appliquer(SBox[ numero[1] ], expanJuste[ numero[1] ]);
 		resFaux = appliquer(SBox[ numero[1] ], expanFaux[ numero[1] ]);
 
-		if(resJuste ^ resFaux  == verification[ numero[1] ])
+		if( (resJuste ^ resFaux)  == verification[ numero[1] ])
 		{
-			(*valPossibles)[numChif][ numero[1] ][i] = i;
+			valPossibles[numChif][ numero[1] ][i] = i;
 		}
 		if(numero[2] > -1)
 		{
 			resJuste = appliquer(SBox[ numero[2] ], expanJuste[ numero[2] ]);
 			resFaux = appliquer(SBox[ numero[2] ], expanFaux[ numero[2] ]);
 
-			if(resJuste ^ resFaux  == verification[ numero[2] ])
+			if( (resJuste ^ resFaux)  == verification[ numero[2] ])
 			{
-				(*valPossibles)[numChif][ numero[2] ][i] = i;
+				valPossibles[numChif][ numero[2] ][i] = i;
 			}
 		}
 	}

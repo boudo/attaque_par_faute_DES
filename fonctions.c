@@ -296,3 +296,27 @@ int puissance(int a, int b) // a != 0
 
 	return a * puissance(a, b - 1);
 }
+
+int appliquer(int SBox[4][16], int expanVal)
+{
+	// int nbBits = 6;
+	int r = -1;
+	int c = -1;
+	int mask1 = 1;
+	int mask2 = 30;
+	int b1 = 0;
+	int b6 = 0;
+	mask1 = mask1 << 5;
+	if(expanVal & mask1)
+	{
+		b1 = 1;
+	}
+	if(expanVal & 1)
+	{
+		b6 = 1;
+	}
+	r = (2 * b1) + b6;
+	c = expanVal & mask2;
+
+	return SBox[r][c];
+}
