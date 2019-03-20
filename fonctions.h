@@ -25,4 +25,8 @@ int puissance(int a, int b);
 
 int appliquer(int SBox[][4][16], int expanVal, int numSBox);
 
+int maximum(int tableau[], int taille);
+
+unsigned long long construreCleK16(int tableau[][65], int nbSBox);
+
 #endif

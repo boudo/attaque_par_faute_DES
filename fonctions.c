@@ -168,7 +168,7 @@ void get_R16_L16(int permutations[], unsigned long long chiffrer, unsigned long*
 	chiffrerPermuter = permutation(permutations, chiffrerBin);
 	// printf("okkkkkk   kkkkk\n");
 	// printf("%s\n", chiffrerBin);
-	// printf("%s\n", chiffrerPermuter);
+	printf("%s\n", chiffrerPermuter);
 	taille = strlen(chiffrerPermuter);
 	// printf("taille = %d\n", taille);
 	decimals = binToDecimal(chiffrerPermuter, taille, dec);
@@ -319,6 +319,35 @@ int appliquer(int SBox[][4][16], int expanVal, int numSBox)
 	}
 	r = (2 * b1) + b6;
 	c = expanVal & mask2;
+	c = c >> 1;
 
 	return SBox[numSBox][r][c];
 }
+
+int maximum(int tableau[], int taille)
+{
+	int max = 0;
+	for(int i = 1; i < taille; i++)
+	{
+		if (max < tableau[i])
+		{
+			max = i;
+		}
+	}
+	return max;
+}
+
+unsigned long long construreCleK16(int tableau[][65], int nbSBox)
+{
+	unsigned long long K16;
+	K16 = maximum(tableau[0], 65);
+
+	for(int i = 1; i < nbSBox; i++)
+	{
+		K16 = K16 << 6;
+		K16 = K16 | maximum(tableau[i], 65);
+	}
+	return K16;
+}
+
+// 101010 110101 010011 000110 000110 111111 000111 011101

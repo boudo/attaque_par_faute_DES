@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], int verification[], int valPossibles[32][8][64])
+void attaqueBox(int numero[], int expanJuste[], int expanFaux[], int verification[], int valPossibles[8][65])
 {
 	// int** tab;
 	int nbBits = 6;
@@ -32,7 +34,7 @@ void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], in
 		// printf("ver = %d\n",verification[ numero[0] ]);
 		if( (resJuste ^ resFaux)  == verification[ numero[0] ])
 		{
-			valPossibles[numChif][ numero[0] ][i] = i;
+			valPossibles[ numero[0] ][i]++;
 			printf("\nnum %d = %d\n\n",numero[0], i );
 		}
 		if(numero[1] > -1)
@@ -48,7 +50,7 @@ void attaqueBox(int numChif, int numero[], int expanJuste[], int expanFaux[], in
 			// printf("ver = %d\n",verification[ numero[1] ]);
 			if( (resJuste ^ resFaux)  == verification[ numero[1] ])
 			{
-				valPossibles[numChif][ numero[1] ][i] = i;
+				valPossibles[ numero[1] ][i]++;
 				printf("\nnum %d = %d\n\n",numero[1], i );
 			}
 		}
@@ -65,7 +67,7 @@ void attaqueSbox()
 	char*  R15FauxbinaireE = NULL;
 	int* expanJuste = NULL;
 	int* expanFaux = NULL;
-	int valPossibles[32][8][64] = {0};
+	int valPossibles[8][65] = {0};
 
 	unsigned long long chifrJuste = messageChifrJuste;
 	unsigned long long chifrFaux;// = messageChifrFaux[0];
@@ -122,9 +124,17 @@ void attaqueSbox()
 	  R15binaireE = expansion(E, R15binaire);
 	  R15FauxbinaireE = expansion(E, R15Fauxbinaire);
 	 expanJuste = binToDecimal(R15binaireE, 48, 6);
+	 for (int i = 0; i < 8; ++i)
+	 {
+	 	printf("%d ", expanJuste[i]);
+	 }printf("\n");
 	 expanFaux = binToDecimal(R15FauxbinaireE, 48, 6);
+	 for (int i = 0; i < 8; ++i)
+	 {
+	 	printf("%d ", expanFaux[i]);
+	 }printf("\n");
 	// int valPossibles[31][8][64] = {0};
-	attaqueBox(test, propa, expanJuste, expanFaux, binDecimals, valPossibles);
+	attaqueBox(propa, expanJuste, expanFaux, binDecimals, valPossibles);
 	free(binaire);
 	free(ver);
 	free(binDecimals);
@@ -135,20 +145,21 @@ void attaqueSbox()
 	free(R15FauxbinaireE);
 	free(expanJuste);
 	free(expanFaux);
-	free(R15bin);
+	free(R15bin); 
 	}
-	for (int i = 0; i < 32; ++i)
-	{ 
+	// for (int i = 0; i < 32; ++i)
+	// { 
 		// printf("chiffrer %d\n", i);
 		for (int j = 0;  j < 8; ++j)
 			{
 				// printf("SBOX %d\n", j);
-				for (int k = 0; k < 64; ++k)
+				for (int k = 0; k < 65; ++k)
 				{
-					printf("%d ", valPossibles[i][j][k]);
-				}printf("\n");
+					printf("%d ", valPossibles[j][k]);
+				}printf("\nk = %d\n", maximum(valPossibles[j], 65));printf("\n");
 			}printf("\n");
-	}printf("\n");
+	printf("%llx\n", construreCleK16(valPossibles, 8));
+	// }printf("\n");
 	// for (int i = 0; i < 32; ++i)
 	// {
 	// 	chifrFaux = messageChifrFaux[i];
@@ -173,4 +184,13 @@ void attaqueSbox()
 	// free(expanFaux);
 	// free(R15bin);
 
+}
+
+void Test()
+{
+	unsigned long R16Faux;
+	unsigned long L16Faux;
+	unsigned long long chifrFaux = 0xB668F7C89EEF61;
+	get_R16_L16(IP, chifrFaux, &R16Faux, &L16Faux);
+	printf("%lx%lx\n",R16Faux, L16Faux );
 }
