@@ -19,20 +19,10 @@ void attaqueBox(int numero[], int expanJuste[], int expanFaux[], int verificatio
 	// printf("rechExhau = %d\n", rechExhau);
 	for(int i = 0; i <= rechExhau ; i++)
 	{	
-		// printf("numero = %d\n", numero[0]);
-		// printf("putttttttttttt\n");
-		// printf("sb_0 %x\n", SBox[1]);
-		// tab = SBox[1];
-		// printf("tab_0_2 %d\n", tab[0][2]);
-		// printf(" val1 %d\n", expanJuste[ numero[0] ]);
 		resJuste = appliquer(SBox, (expanJuste[ numero[0] ] ^ i), numero[0]);
 		// printf("resJuste = %d\n", resJuste);
 		resFaux = appliquer(SBox, (expanFaux[ numero[0] ] ^ i), numero[0]);
 		// printf("resFaux = %d\n", resFaux);
-		// printf(" val2 %d\n", expanFaux[ numero[0] ]);
-		// printf("rien ici************\n");
-		// printf("xor = %d\n", (int)(resJuste ^ resFaux));
-		// printf("ver = %d\n",verification[ numero[0] ]);
 		if( (resJuste ^ resFaux)  == verification[ numero[0] ])
 		{
 			valPossibles[ numero[0] ][i]++;
@@ -72,23 +62,23 @@ void attaqueSbox()
 
 	unsigned long long chifrJuste = messageChifrJuste;
 	unsigned long long chifrFaux;// = messageChifrFaux[0];
-	unsigned long R15;
-	unsigned long R15Faux;
-	unsigned long R16;
-	unsigned long R16Faux;
-	unsigned long L16;
-	unsigned long L16Faux;
-	unsigned long verification;
+	unsigned long long R15;
+	unsigned long long R15Faux;
+	unsigned long long R16;
+	unsigned long long R16Faux;
+	unsigned long long L16;
+	unsigned long long L16Faux;
+	// unsigned long long verification;
 	unsigned long long cleAttribuer;
 	char* binaire = NULL;
 	char* ver = NULL;
 	int* propa = NULL;
 	int* binDecimals = NULL;
-	int taille;// = 0;
-	unsigned long bitFaux;
+	// int taille;// = 0;
+	unsigned long long bitFaux;
 	int position;// = -2;
 	for(int test = 0; test < 32; test++){
-	taille = 0;
+	// taille = 0;
 	position = -2;
 	chifrFaux = messageChifrFaux[test];
 	get_R16_L16(IP, chifrJuste, &R16, &L16);
@@ -96,46 +86,46 @@ void attaqueSbox()
 	// printf("R16 = %lX  ", R16);printf("L16 = %lX\n", L16);
 	get_R16_L16(IP, chifrFaux, &R16Faux, &L16Faux);
 	R15Faux = L16Faux;
-	char* K16 = "101010110101010111111001100000111111000111011101";
-	unsigned long TEST1 = fonctionF(P, E, SBox, R15, K16);
-	unsigned long TEST2 = fonctionF(P, E, SBox, R15Faux, K16);
-	printf("remon = %lX\n", R16 ^ R16Faux);
-	printf("desc  = %lX\n", TEST1 ^ TEST2);
+	// char* K16 = "101010110101010111111001100000111111000111011101";
+	// unsigned long TEST1 = fonctionF(P, E, SBox, R15, K16);
+	// unsigned long TEST2 = fonctionF(P, E, SBox, R15Faux, K16);
+	// printf("remon = %llX\n", R16 ^ R16Faux);
+	// printf("desc  = %llX\n", TEST1 ^ TEST2);
 	//  printf("R16F= %lX  ", R16Faux);printf("L16F= %lX\n", L16Faux);
 	bitFaux = R15 ^ R15Faux;
 	// printf("%lX\n", bitFaux);
 	// printf("%d\n", (int) bitFaux);
-	position = posiBitFauter32(bitFaux);
+	position = posiBitFauter(bitFaux, 32);
 	propa = propaBitFaux(position);
 	// for (int p = 0; p < 2; p++)
 	// {
 	// 	printf("%d ", propa[p]);
 	// }printf("\n");
-	binaire = bin32(R16 ^ R16Faux);
+	binaire = hexaToBin(R16 ^ R16Faux, 32);
 	// verification = permutation(PInv, binaire);
-	ver = permutation(PInv, binaire);
+	ver = permutation(PInv, binaire, 32);
 	// printf("%s\n", ver);
 	// printf("%lX\n", R15);
-	 R15bin = bin32(R15);
+	 R15bin = hexaToBin(R15, 32);
 	// printf("%s\n", R15bin);
-	taille = strlen(ver);
-	binDecimals = binToDecimal(ver, taille, 4);
+	// binToHexa = strlen(ver);
+	binDecimals = binToDecimal(ver, 4);
 	// for (int i = 0; i < taille/4; ++i)
 	// {
 	// 	printf("%d ", binDecimals[i]);
 	// }printf("\n");
-	verification = binToHexa32(ver);
+	// verification = binToHexa(ver, 32);
 	// printf("%lX\n", verification);
-	 R15binaire = bin32(R15);
-	 R15Fauxbinaire = bin32(R15Faux);
+	 R15binaire = hexaToBin(R15, 32);
+	 R15Fauxbinaire = hexaToBin(R15Faux, 32);
 	  R15binaireE = expansion(E, R15binaire);
 	  R15FauxbinaireE = expansion(E, R15Fauxbinaire);
-	 expanJuste = binToDecimal(R15binaireE, 48, 6);
+	 expanJuste = binToDecimal(R15binaireE, 6);
 	 // for (int i = 0; i < 8; ++i)
 	 // {
 	 // 	printf("%d ", expanJuste[i]);
 	 // }printf("\n");
-	 expanFaux = binToDecimal(R15FauxbinaireE, 48, 6);
+	 expanFaux = binToDecimal(R15FauxbinaireE, 6);
 	 // for (int i = 0; i < 8; ++i)
 	 // {
 	 // 	printf("%d ", expanFaux[i]);
@@ -255,11 +245,11 @@ char* recheCleKEff(unsigned long long messgClair, unsigned long long chiffJuste,
 unsigned long long DESAttaque(unsigned long long messgClair, char* cleKEff)
 {
 	unsigned long long C;
-	unsigned long L0;
-	unsigned long Li;
-	unsigned long R0;
-	unsigned long Ri;
-	unsigned long resF;
+	unsigned long long L0;
+	unsigned long long Li;
+	unsigned long long R0;
+	unsigned long long Ri;
+	unsigned long long resF;
 	unsigned long long R16L16;
 	unsigned long long mask1 = 0xFFFFFFFF00000000;
 	unsigned long long mask2 = 0x00000000FFFFFFFF;
@@ -270,13 +260,13 @@ unsigned long long DESAttaque(unsigned long long messgClair, char* cleKEff)
 	char* R16L16BinPerm = NULL;
 	char* messgClairPermut = NULL;
 
-	char* messgBin = bin64(messgClair);
-	messgClairPermut = permutation(IP, messgBin);
-	messgTmp = binToHexa64(messgClairPermut);
+	char* messgBin = hexaToBin(messgClair, 64);
+	messgClairPermut = permutation(IP, messgBin, 64);
+	messgTmp = binToHexa(messgClairPermut, 64);
 	L0 = (messgTmp & mask1) >> 32;
 	R0 = (messgTmp & mask2);
 
-	CD = permutationCle(PC1, cleKEff);
+	CD = permutation(PC1, cleKEff, 56);
 	// for (int i = 0; i < 56; ++i)
 	// {
 	// 	if(i%7==0)
@@ -299,9 +289,9 @@ unsigned long long DESAttaque(unsigned long long messgClair, char* cleKEff)
 	R16L16 = R0;
 	R16L16 = R16L16 << 32;
 	R16L16 = R16L16 | L0;
-	R16L16Bin = bin64(R16L16);
-	R16L16BinPerm = permutation(IPInv, R16L16Bin);
-	C = binToHexa64(R16L16BinPerm);
+	R16L16Bin = hexaToBin(R16L16, 64);
+	R16L16BinPerm = permutation(IPInv, R16L16Bin, 64);
+	C = binToHexa(R16L16BinPerm, 64);
 	
 	free(CD);
 	free(R16L16Bin);

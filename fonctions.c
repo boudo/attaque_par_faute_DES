@@ -23,27 +23,9 @@ char* expansion(int E[], char* binaire)
 	return expan;
 }
 
-char* permutation(int P[], char* chiffrerBin)
+char* permutation(int P[], char* chiffrerBin, int tailleSortie)
 {
-	int taille = strlen(chiffrerBin);
-	char* chiffrerPermuter = NULL;
-	chiffrerPermuter = malloc(taille * sizeof(char) + sizeof(char));
-	chiffrerPermuter[taille] = '\0';
-	if (chiffrerPermuter == NULL)
-	{
-		exit(2);
-	}
-	for(int i = 0; i < taille; i++)
-	{
-		chiffrerPermuter[i] = chiffrerBin[P[i] - 1];
-	}
-	return chiffrerPermuter;
-}
-
-char* permutationCle(int P[], char* chiffrerBin)
-{
-	int taille = strlen(chiffrerBin);
-	taille = taille - 8;
+	int taille = tailleSortie;
 	char* chiffrerPermuter = NULL;
 	chiffrerPermuter = malloc(taille * sizeof(char) + sizeof(char));
 	chiffrerPermuter[taille] = '\0';
@@ -58,11 +40,12 @@ char* permutationCle(int P[], char* chiffrerBin)
 	return chiffrerPermuter;
 }
 
-int* binToDecimal(char* bin, int taille, int nbBits)
+int* binToDecimal(char* bin, int nbBits)
 {
 	int T = 0;
 	int k = 0;
 	int i = 0;
+	int taille = strlen(bin);
 	int* decimals = NULL;
 	int val = 0;
 	int tmp = puissance(2, nbBits - 1);
@@ -93,27 +76,21 @@ int* binToDecimal(char* bin, int taille, int nbBits)
 		tmp = puissance(2, nbBits - 1);
 		val = 0;
 	}
-	// printf("taille de decimals = %d\n", T);
-	// printf("okkkkkkkkkkkkkkkkkkkkkkk\n");
-	// for (int t = 0; t < T; t++)
-	// {
-	// 	printf("%d ", decimals[t]);
-	// }printf("\n");
 	return decimals;
 }
 
-char* hexaToBin(unsigned long long hexadecimal, int taille)
+char* hexaToBin(unsigned long long hexadecimal, int tailleSortie)
 {
 	char* bits = NULL;
-	bits = malloc(taille * sizeof(char) + sizeof(char));
+	bits = malloc(tailleSortie * sizeof(char) + sizeof(char));
 	if(bits == NULL)
 	{
 		exit(2);
 	}
-	bits[taille] = '\0';
+	bits[tailleSortie] = '\0';
 
 	unsigned long long mask = 1;
-	mask = (mask << (taille - 1));
+	mask = (mask << (tailleSortie - 1));
 	// printf("mask = %llX\n", mask);
 	int i = 0;
 	while(mask != 0)
@@ -132,102 +109,20 @@ char* hexaToBin(unsigned long long hexadecimal, int taille)
 		i++;
 	}
 	// int tt = strlen(bits);
-	// printf("taille %d\n", tt);
+	// printf("tailleSortie %d\n", tt);
 	return bits;
 }
 
-char* bin64(unsigned long long hexadecimal)
-{
-	int taille = 16 * 4; // chaque val haxadecimal est sur 4 bit. on a 16 val
-	char* bits = NULL;
-	bits = malloc(taille * sizeof(char) + sizeof(char));
-	if(bits == NULL)
-	{
-		exit(2);
-	}
-	bits[taille] = '\0';
-
-	unsigned long long mask = 1;
-	mask = (mask << 63);
-	// printf("mask = %llX\n", mask);
-	int i = 0;
-	while(mask != 0)
-	{
-		if (hexadecimal & mask)
-		{
-			bits[i] = '1';
-		}
-		else
-		{
-			bits[i] = '0';
-		}
-		mask = (mask >> 1);
-		// printf("mask = %llX\n", mask);
-		// printf("%d\n", i);
-		i++;
-	}
-	// int tt = strlen(bits);
-	// printf("taille %d\n", tt);
-	return bits;
-}
-
-char* bin32(unsigned long hexadecimal)
-{
-	int taille = 8 * 4; // chaque val haxadecimal est sur 4 bit. on a 8 val
-	char* bits = NULL;
-	bits = malloc(taille * sizeof(char) + sizeof(char));
-	if(bits == NULL)
-	{
-		exit(2);
-	}
-	bits[taille] = '\0';
-
-	unsigned long long mask = 1;
-	mask = (mask << 31);
-	// printf("mask = %llX\n", mask);
-	int i = 0;
-	while(mask != 0)
-	{
-		if (hexadecimal & mask)
-		{
-			bits[i] = '1';
-		}
-		else
-		{
-			bits[i] = '0';
-		}
-		mask = (mask >> 1);
-		// printf("mask = %llX\n", mask);
-		// printf("%d\n", i);
-		i++;
-	}
-	// int tt = strlen(bits);
-	// printf("taille %d\n", tt);
-	return bits;
-}
-
-void get_R16_L16(int permutations[], unsigned long long chiffrer, unsigned long* R16, unsigned long* L16)
+void get_R16_L16(int IPInv[], unsigned long long chiffrer, unsigned long long* R16, unsigned long long* L16)
 {
 	char* chiffrerPermuter = NULL;
 	char* chiffrerBin = NULL;
 	int* decimals = NULL;
-	int taille = 0;
 	int tmp = 0;
 	int dec = 4;
-	// unsigned long long mask = (1 << 31);
-	chiffrerBin = bin64(chiffrer);
-	// printf("ici ici ici ici \n");
-	chiffrerPermuter = permutation(permutations, chiffrerBin);
-	// printf("okkkkkk   kkkkk\n");
-	// printf("%s\n", chiffrerBin);
-	// printf("%s\n", chiffrerPermuter);
-	taille = strlen(chiffrerPermuter);
-	// printf("taille = %d\n", taille);
-	decimals = binToDecimal(chiffrerPermuter, taille, dec);
-	// for (int t = 0; t < taille/4; t++)
-	// {
-	// 	printf("%d ", decimals[t]);
-	// }printf("\n");
+	chiffrerBin = hexaToBin(chiffrer, 64);
+	chiffrerPermuter = permutation(IPInv, chiffrerBin, 64);
+	decimals = binToDecimal(chiffrerPermuter, dec);
 	*R16 = decimals[0];
 	for(int i = 1; i < 8; i++)
 	{
@@ -247,14 +142,14 @@ void get_R16_L16(int permutations[], unsigned long long chiffrer, unsigned long*
 	free(decimals);
 }
 
-unsigned long long binToHexa64(char* binaire)
+unsigned long long binToHexa(char* binaire, int tailleSortie)
 {
-	int taille = 64;
+	int taille = tailleSortie;
 	int tailleHexa = taille / 4;
 	int dec = 4;
 	int* decimals = NULL;
 	unsigned long long hexa;
-	decimals = binToDecimal(binaire, taille, dec);
+	decimals = binToDecimal(binaire, dec);
 	hexa = decimals[0];
 	for(int i = 1; i < tailleHexa; i++)
 	{
@@ -265,46 +160,10 @@ unsigned long long binToHexa64(char* binaire)
 	return hexa;
 }
 
-unsigned long long binToHexa56(char* binaire)
+int posiBitFauter(unsigned long long hexadecimal, int nbBits)
 {
-	int taille = 56;
-	int tailleHexa = taille / 4;
-	int dec = 4;
-	int* decimals = NULL;
-	unsigned long long hexa;
-	decimals = binToDecimal(binaire, taille, dec);
-	hexa = decimals[0];
-	for(int i = 1; i < tailleHexa; i++)
-	{
-		hexa = hexa << dec;
-		hexa = hexa | decimals[i];
-	}
-	free(decimals);
-	return hexa;
-}
-
-unsigned long binToHexa32(char* binaire)
-{
-	int taille = 32;
-	int tailleHexa = taille / 4;
-	int dec = 4;
-	int* decimals = NULL;
-	unsigned long long hexa;
-	decimals = binToDecimal(binaire, taille, dec);
-	hexa = decimals[0];
-	for(int i = 1; i < tailleHexa; i++)
-	{
-		hexa = hexa << dec;
-		hexa = hexa | decimals[i];
-	}
-	free(decimals);
-	return hexa;
-}
-
-int posiBitFauter32(unsigned long hexadecimal)
-{
-	unsigned long tmpHexa = hexadecimal;
-	int position = 33;
+	unsigned long long tmpHexa = hexadecimal;
+	int position = nbBits+1;
 	// int position = -1;
 	while(tmpHexa)
 	{
@@ -394,18 +253,18 @@ int appliquer(int SBox[][4][16], int expanVal, int numSBox)
 	return SBox[numSBox][r][c];
 }
 
-int maximum(int tableau[], int taille)
-{
-	int max = tableau[0];
-	for(int i = 1; i < taille; i++)
-	{
-		if (max < tableau[i])
-		{
-			max = i;
-		}
-	}
-	return max;
-}
+// int maximum(int tableau[], int taille)
+// {
+// 	int max = tableau[0];
+// 	for(int i = 1; i < taille; i++)
+// 	{
+// 		if (max < tableau[i])
+// 		{
+// 			max = i;
+// 		}
+// 	}
+// 	return max;
+// }
 
 unsigned long long construreCleK16(int tableau[][65], int nbSBox)
 {
@@ -475,7 +334,7 @@ char* cleKEffIncomp(int PC2Inv[], unsigned long long cleK16)
 		}
 		
 	}
-	printf("cleEff = %s \n", cleEff);
+	// printf("cleEff = %s \n", cleEff);
 	// res = binToHexa56(cleEff);
 	free(cleK16Bin);
 	// free(cleEff);
@@ -580,7 +439,7 @@ void decalageG(char* CD, int dec)
 	}
 }
 
-unsigned long fonctionF(int P[], int E[], int SBox[][4][16], unsigned long Ri, char* Ki)
+unsigned long long fonctionF(int P[], int E[], int SBox[][4][16], unsigned long long Ri, char* Ki)
 {
 	char* RiBinaire = NULL;
 	char* RiExpan = NULL;
@@ -590,13 +449,13 @@ unsigned long fonctionF(int P[], int E[], int SBox[][4][16], unsigned long Ri, c
 	char* resPerm = NULL;
 	int nbSBox = 8;
 	int resSDecim[ 8 ] = {-1};
-	unsigned long resF;
+	unsigned long long resF;
 	int dec = 4;
 	int tmp = 0;
-	RiBinaire = bin32(Ri);
+	RiBinaire = hexaToBin(Ri, 32);
 	RiExpan = expansion(E, RiBinaire);
-	RiExpanDecim = binToDecimal(RiExpan, 48, 6);
-	KiDecim = binToDecimal(Ki, 48, 6);
+	RiExpanDecim = binToDecimal(RiExpan, 6);
+	KiDecim = binToDecimal(Ki, 6);
 	for(int i = 0; i < nbSBox; i++)
 	{
 		resSDecim[i] = appliquer(SBox, (RiExpanDecim[i] ^ KiDecim[i]), i);
@@ -608,9 +467,9 @@ unsigned long fonctionF(int P[], int E[], int SBox[][4][16], unsigned long Ri, c
 		tmp = resSDecim[i];
 		resF = resF | tmp;
 	}
-	resFBin = bin32(resF);
-	resPerm = permutation(P, resFBin);
-	resF = binToHexa32(resPerm);
+	resFBin = hexaToBin(resF, 32);
+	resPerm = permutation(P, resFBin, 32);
+	resF = binToHexa(resPerm, 32);
 	free(RiBinaire);
 	free(RiExpan);
 	free(RiExpanDecim);
@@ -652,29 +511,12 @@ unsigned long long ajoutBitParite(char* cleK)
 			parite = 0;
 		}
 	}
-	cleComplete = binToHexa64(cleKTmp);
+	cleComplete = binToHexa(cleKTmp, 64);
 	printf("%s\n", cleKTmp);
 	free(cleKTmp);
 	return cleComplete;
 }
 
-// char* verif(int PC1[], char* cleKIncompl)
-// {
-// 	char* ver = NULL;
-// 	int taille = 56;
-// 	int j = 0;
-// 	ver = malloc(taille * sizeof(char) + sizeof(char));
-// 	if(ver == NULL)
-// 	{
-// 		exit(2);
-// 	}
-// 	ver[taille] = '\0';
-// 	for (int i = 0; i < 56; ++i)
-// 	{
-// 		ver[i] = cleKIncompl[ PC1[i] - 1 ];
-// 	}
-// 	return ver;
-// }
 
 // 101010 110101 010011 000110 000110 111111 000111 011101
 // AB54C61BF1DD

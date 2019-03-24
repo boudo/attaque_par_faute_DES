@@ -6,6 +6,4 @@
 char* keySchedule(int PC2[], char* cleK, char* CD, int ki);
 
 
-
-
 #endif

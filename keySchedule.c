@@ -32,13 +32,13 @@ char* keySchedule(int PC2[], char* cleK, char* CD, int ki)
 	{
 		dec = 1;
 		decalageG(CD, dec);
-		cleKi = permutationCle(PC2, CD);
+		cleKi = permutation(PC2, CD, 48);
 	}
 	else
 	{
 		dec = 2;
 		decalageG(CD, dec);
-		cleKi = permutationCle(PC2, CD);
+		cleKi = permutation(PC2, CD, 48);
 	}
 	strcpy(resCleKi, cleKi);
 	// printf("k_%d = %s\n",ki, resCleKi);
