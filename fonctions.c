@@ -19,7 +19,7 @@ char* expansion(int E[], char* binaire)
 	{
 		expan[i] = binaire[E[i] - 1];
 	}
-	printf("exp = %s\n", expan);
+	// printf("exp = %s\n", expan);
 	return expan;
 }
 
@@ -40,6 +40,24 @@ char* permutation(int P[], char* chiffrerBin)
 	return chiffrerPermuter;
 }
 
+char* permutationCle(int P[], char* chiffrerBin)
+{
+	int taille = strlen(chiffrerBin);
+	taille = taille - 8;
+	char* chiffrerPermuter = NULL;
+	chiffrerPermuter = malloc(taille * sizeof(char) + sizeof(char));
+	chiffrerPermuter[taille] = '\0';
+	if (chiffrerPermuter == NULL)
+	{
+		exit(2);
+	}
+	for(int i = 0; i < taille; i++)
+	{
+		chiffrerPermuter[i] = chiffrerBin[ P[i] - 1];
+	}
+	return chiffrerPermuter;
+}
+
 int* binToDecimal(char* bin, int taille, int nbBits)
 {
 	int T = 0;
@@ -49,7 +67,7 @@ int* binToDecimal(char* bin, int taille, int nbBits)
 	int val = 0;
 	int tmp = puissance(2, nbBits - 1);
 	T = taille / nbBits;
-	printf("T = %d\n", T);
+	// printf("T = %d\n", T);
 	decimals =  malloc(T * sizeof(int));
 	if(decimals == NULL)
 	{
@@ -82,6 +100,40 @@ int* binToDecimal(char* bin, int taille, int nbBits)
 	// 	printf("%d ", decimals[t]);
 	// }printf("\n");
 	return decimals;
+}
+
+char* hexaToBin(unsigned long long hexadecimal, int taille)
+{
+	char* bits = NULL;
+	bits = malloc(taille * sizeof(char) + sizeof(char));
+	if(bits == NULL)
+	{
+		exit(2);
+	}
+	bits[taille] = '\0';
+
+	unsigned long long mask = 1;
+	mask = (mask << (taille - 1));
+	// printf("mask = %llX\n", mask);
+	int i = 0;
+	while(mask != 0)
+	{
+		if (hexadecimal & mask)
+		{
+			bits[i] = '1';
+		}
+		else
+		{
+			bits[i] = '0';
+		}
+		mask = (mask >> 1);
+		// printf("mask = %llX\n", mask);
+		// printf("%d\n", i);
+		i++;
+	}
+	// int tt = strlen(bits);
+	// printf("taille %d\n", tt);
+	return bits;
 }
 
 char* bin64(unsigned long long hexadecimal)
@@ -168,7 +220,7 @@ void get_R16_L16(int permutations[], unsigned long long chiffrer, unsigned long*
 	chiffrerPermuter = permutation(permutations, chiffrerBin);
 	// printf("okkkkkk   kkkkk\n");
 	// printf("%s\n", chiffrerBin);
-	printf("%s\n", chiffrerPermuter);
+	// printf("%s\n", chiffrerPermuter);
 	taille = strlen(chiffrerPermuter);
 	// printf("taille = %d\n", taille);
 	decimals = binToDecimal(chiffrerPermuter, taille, dec);
@@ -213,6 +265,24 @@ unsigned long long binToHexa64(char* binaire)
 	return hexa;
 }
 
+unsigned long long binToHexa56(char* binaire)
+{
+	int taille = 56;
+	int tailleHexa = taille / 4;
+	int dec = 4;
+	int* decimals = NULL;
+	unsigned long long hexa;
+	decimals = binToDecimal(binaire, taille, dec);
+	hexa = decimals[0];
+	for(int i = 1; i < tailleHexa; i++)
+	{
+		hexa = hexa << dec;
+		hexa = hexa | decimals[i];
+	}
+	free(decimals);
+	return hexa;
+}
+
 unsigned long binToHexa32(char* binaire)
 {
 	int taille = 32;
@@ -241,7 +311,7 @@ int posiBitFauter32(unsigned long hexadecimal)
 		position--;
 		tmpHexa = tmpHexa >> 1;
 	}
-	printf("posi = %d\n", position);
+	// printf("posi = %d\n", position);
 	return position;
 }
 
@@ -326,7 +396,7 @@ int appliquer(int SBox[][4][16], int expanVal, int numSBox)
 
 int maximum(int tableau[], int taille)
 {
-	int max = 0;
+	int max = tableau[0];
 	for(int i = 1; i < taille; i++)
 	{
 		if (max < tableau[i])
@@ -339,15 +409,275 @@ int maximum(int tableau[], int taille)
 
 unsigned long long construreCleK16(int tableau[][65], int nbSBox)
 {
+	printf("construire\n");
 	unsigned long long K16;
-	K16 = maximum(tableau[0], 65);
+	// K16 = maximum(tableau[0], 65);
+	// for (int i = 0; i < 8; ++i)
+	// {
+	// 	for (int j = 0; j < 65; ++j)
+	// 	{
+	// 		printf("%d ", j);
+	// 	}printf("\n");
+	// }
 
+	int max = -1;
+	for(int k = 0; k < 65; k++)
+	{
+		if(tableau[0][k] == 6)
+			{
+				max = k;
+			}
+	}
+	K16 = max;
+	printf("%d ", max);
 	for(int i = 1; i < nbSBox; i++)
 	{
+		max = -1;
+		for (int j = 0; j < 65; j++)
+		{
+			if(tableau[i][j] == 6)
+			{
+				max = j;
+				// printf("%d ", max);
+			}
+		}printf("%d ", max);
 		K16 = K16 << 6;
-		K16 = K16 | maximum(tableau[i], 65);
-	}
+		K16 = K16 | max;
+	}printf("\n");
+
 	return K16;
 }
 
+char* cleKEffIncomp(int PC2Inv[], unsigned long long cleK16)
+{
+	// unsigned long long res = 0;
+	char* cleK16Bin = NULL;
+	char* cleEff = NULL;
+	int taille = 56;
+	cleK16Bin = hexaToBin(cleK16, 48);
+	cleEff = malloc(taille * sizeof(char) + sizeof(char));
+	if(cleEff == NULL)
+	{
+		exit(2);
+
+	}
+	cleEff[taille] = '\0';
+	for(int i = 0; i < taille; i++)
+	{
+		/*if(i == 9 || i == 18 || i == 22 || i == 25 || i == 35 || i == 38 || i == 43 || i == 54)*/
+		if(PC2Inv[i] == 0)
+		{
+			cleEff[i] = 'X';
+		}
+		else
+		{
+			cleEff[i] = cleK16Bin[ PC2Inv[i] -1 ];
+		}
+		
+	}
+	printf("cleEff = %s \n", cleEff);
+	// res = binToHexa56(cleEff);
+	free(cleK16Bin);
+	// free(cleEff);
+	return cleEff;
+}
+
+char* cleKIncomp(int PC1Inv[], char* cleKEffIncompl)
+{
+	// unsigned long long res = 0;
+	char* cleK = NULL;
+	// char* cleKEffInBin = NULL;
+	int taille = 64;
+	// cleKEffInBin = hexaToBin(cleKEffIncomp, 56);
+	cleK = malloc(taille * sizeof(char) + sizeof(char));
+	if(cleK == NULL)
+	{
+		exit(2);
+	}
+	cleK[taille] = '\0';
+	for(int i = 0; i < taille; i++)
+	{
+		if( (i + 1) % 8 == 0 )
+		{
+			cleK[i] = 'P';
+		}
+		else
+		{
+			cleK[i] = cleKEffIncompl[ PC1Inv[i] - 1 ];
+		}
+		
+	}
+	return cleK;
+
+}
+
+int* getBitInconnu(char* cleKIncompl)
+{
+	int tailleCle = strlen(cleKIncompl);
+	int tailleIncon = 8; // 8 bit inconnu
+	int j = 0;
+	int* inconnu = NULL;
+	inconnu = malloc(tailleIncon * sizeof(int));
+	for(int i = 0; i < tailleCle; i++)
+	{
+		if(cleKIncompl[i] == 'X')
+		{
+			inconnu[j++] = i;
+			printf("%d ", i+1);
+		}
+	}printf("\n j = %d", j);
+	return inconnu;
+}
+
+char* getCle(char* cleKIncompl, int* bitInconnu, int k)
+{
+	int taille = strlen(cleKIncompl);
+	int tailleInconnu = 8;
+	int mask = 1;
+	mask = mask << 7;
+	char* cleTmp = NULL;
+	cleTmp = malloc(taille * sizeof(char) + sizeof(char));
+	if (cleTmp == NULL)
+	{
+		exit(2);
+	}
+	cleTmp[taille] = '\0';
+	strcpy(cleTmp, cleKIncompl);
+
+	for (int i = 0; i < tailleInconnu; i++)
+	{
+		if ( k & mask )
+		{
+			cleTmp[ bitInconnu[i] ] = '1';
+		}
+		else
+		{
+			cleTmp[ bitInconnu[i] ] = '0';
+		}
+		mask = mask >> 1;
+	}
+	return cleTmp;
+}
+
+void decalageG(char* CD, int dec)
+{
+	int taille = strlen(CD);
+	taille = taille / 2;
+	int tmpC = 0;
+	int tmpD = 0;
+	for(int i = 0; i < dec; i++)
+	{
+		tmpC = CD[0];
+		tmpD = CD[taille];
+		for(int j = 0; j < taille-1; j++)
+		{
+			
+			CD[j] = CD[j+1];
+			CD[j+taille] = CD[j+taille+1];
+		}
+		CD[taille-1] = tmpC;
+		CD[2*taille - 1] = tmpD;
+	}
+}
+
+unsigned long fonctionF(int P[], int E[], int SBox[][4][16], unsigned long Ri, char* Ki)
+{
+	char* RiBinaire = NULL;
+	char* RiExpan = NULL;
+	int* RiExpanDecim = NULL;
+	int* KiDecim = NULL;
+	char* resFBin = NULL;
+	char* resPerm = NULL;
+	int nbSBox = 8;
+	int resSDecim[ 8 ] = {-1};
+	unsigned long resF;
+	int dec = 4;
+	int tmp = 0;
+	RiBinaire = bin32(Ri);
+	RiExpan = expansion(E, RiBinaire);
+	RiExpanDecim = binToDecimal(RiExpan, 48, 6);
+	KiDecim = binToDecimal(Ki, 48, 6);
+	for(int i = 0; i < nbSBox; i++)
+	{
+		resSDecim[i] = appliquer(SBox, (RiExpanDecim[i] ^ KiDecim[i]), i);
+	}
+	resF = resSDecim[0];
+	for (int i = 1; i < nbSBox; i++)
+	{
+		resF = resF << dec;
+		tmp = resSDecim[i];
+		resF = resF | tmp;
+	}
+	resFBin = bin32(resF);
+	resPerm = permutation(P, resFBin);
+	resF = binToHexa32(resPerm);
+	free(RiBinaire);
+	free(RiExpan);
+	free(RiExpanDecim);
+	free(KiDecim);
+	free(resFBin);
+	free(resPerm);
+	return resF;
+}
+
+unsigned long long ajoutBitParite(char* cleK)
+{
+	int taille = strlen(cleK);
+	int parite = 0;
+	unsigned long long cleComplete;
+	char* cleKTmp = NULL;
+	cleKTmp = malloc(taille * sizeof(char) + sizeof(char));
+	if(cleKTmp == NULL)
+	{
+		exit(2);
+	}
+	cleKTmp[taille] = '\0';
+	strcpy(cleKTmp, cleK);
+	for (int i = 0; i < taille; i++)
+	{
+		if(cleKTmp[i] == '1')
+		{
+			parite++;
+		}
+		if(cleKTmp[i] == 'P')
+		{
+			if(parite % 2 == 0)
+			{
+				cleKTmp[i] = '1';
+			}
+			else
+			{
+				cleKTmp[i] = '0';
+			}
+			parite = 0;
+		}
+	}
+	cleComplete = binToHexa64(cleKTmp);
+	printf("%s\n", cleKTmp);
+	free(cleKTmp);
+	return cleComplete;
+}
+
+// char* verif(int PC1[], char* cleKIncompl)
+// {
+// 	char* ver = NULL;
+// 	int taille = 56;
+// 	int j = 0;
+// 	ver = malloc(taille * sizeof(char) + sizeof(char));
+// 	if(ver == NULL)
+// 	{
+// 		exit(2);
+// 	}
+// 	ver[taille] = '\0';
+// 	for (int i = 0; i < 56; ++i)
+// 	{
+// 		ver[i] = cleKIncompl[ PC1[i] - 1 ];
+// 	}
+// 	return ver;
+// }
+
 // 101010 110101 010011 000110 000110 111111 000111 011101
+// AB54C61BF1DD
+// ab54c61bf1dd
+// cleEff = 1010 0101 0110 1100 0011 0000 0101 0101 1101 1001 0100 1011 0110 1001
+// A56C3055D94B69

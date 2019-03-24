@@ -64,7 +64,6 @@ int main(int argc, char const *argv[])
 
 	attaqueSbox();
 	// printf("%d\n", puissance(2, 5));
-	// Test();
 	printf("\ntout marche bien\n");
 	return 0;
 }
