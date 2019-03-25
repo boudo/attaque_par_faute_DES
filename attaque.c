@@ -49,7 +49,7 @@ void attaqueBox(int numero[], int expanJuste[], int expanFaux[], int verificatio
 
 }
 
-void attaqueSbox()
+unsigned long long attaqueSbox()
 {
 	char* R15bin = NULL;
 	char* R15binaire = NULL;
@@ -61,7 +61,7 @@ void attaqueSbox()
 	int valPossibles[8][65] = {0};
 
 	unsigned long long chifrJuste = messageChifrJuste;
-	unsigned long long chifrFaux;// = messageChifrFaux[0];
+	unsigned long long chifrFaux;
 	unsigned long long R15;
 	unsigned long long R15Faux;
 	unsigned long long R16;
@@ -69,7 +69,6 @@ void attaqueSbox()
 	unsigned long long L16;
 	unsigned long long L16Faux;
 	// unsigned long long verification;
-	unsigned long long cleAttribuer;
 	char* binaire = NULL;
 	char* ver = NULL;
 	int* propa = NULL;
@@ -86,15 +85,8 @@ void attaqueSbox()
 	// printf("R16 = %lX  ", R16);printf("L16 = %lX\n", L16);
 	get_R16_L16(IP, chifrFaux, &R16Faux, &L16Faux);
 	R15Faux = L16Faux;
-	// char* K16 = "101010110101010111111001100000111111000111011101";
-	// unsigned long TEST1 = fonctionF(P, E, SBox, R15, K16);
-	// unsigned long TEST2 = fonctionF(P, E, SBox, R15Faux, K16);
-	// printf("remon = %llX\n", R16 ^ R16Faux);
-	// printf("desc  = %llX\n", TEST1 ^ TEST2);
-	//  printf("R16F= %lX  ", R16Faux);printf("L16F= %lX\n", L16Faux);
 	bitFaux = R15 ^ R15Faux;
 	// printf("%lX\n", bitFaux);
-	// printf("%d\n", (int) bitFaux);
 	position = posiBitFauter(bitFaux, 32);
 	propa = propaBitFaux(position);
 	// for (int p = 0; p < 2; p++)
@@ -132,6 +124,7 @@ void attaqueSbox()
 	 // }printf("\n");
 	// int valPossibles[31][8][64] = {0};
 	attaqueBox(propa, expanJuste, expanFaux, binDecimals, valPossibles);
+	
 	free(binaire);
 	free(ver);
 	free(binDecimals);
@@ -144,57 +137,33 @@ void attaqueSbox()
 	free(expanFaux);
 	free(R15bin); 
 	}
-	// for (int i = 0; i < 32; ++i)
-	// { 
-	// 	printf("chiffrer %d\n", i);
-		// for (int j = 1;  j < 8; ++j)
-		// 	{
-		// 		// printf("SBOX %d\n", j);
-		// 		for (int k = 0; k < 65; ++k)
-		// 		{
-		// 			printf("%d ", valPossibles[j][k]);
-		// 		}printf("\n");//printf("\nk = %d\n", maximum(valPossibles[j], 65));printf("\n");
-		// 	}printf("\n");
-			char* cle1 = cleKEffIncomp(PC2Inv, construreCleK16(valPossibles, 8));
-			char* cle2 = cleKIncomp(PC1Inv, cle1);
-	printf("%llX\n", construreCleK16(valPossibles, 8));
+
+	return construreCleK16(valPossibles, 8);
+}
+
+unsigned long long cleK(unsigned long long cleK16)
+{
+	unsigned long long cleAttribuer;
+	char* cle1 = NULL;
+	char* cle2 = NULL;
+	cle1 = cleKEffIncomp(PC2Inv, cleK16);
+	cle2 = cleKIncomp(PC1Inv, cle1);
 	printf("%s\n", cle1);
-	printf("%s\n", cle2); // 3 bloc perdu
+	printf("%s\n", cle2);
+
+
+
 	char* cleK = NULL;
 	cleK = recheCleKEff(messageClair,messageChifrJuste, cle2);
 	printf("ma cle k = %s\n", cleK);
 	cleAttribuer = ajoutBitParite(cleK);
 	printf("ma cle attribuer est = %llX\n", cleAttribuer);
-	// printf("%s\n", verif(PC1, cleKIncomp(PC1Inv, cleKEffIncomp(PC2Inv, construreCleK16(valPossibles, 8)))));
-	
-	// }printf("\n");
-	// for (int i = 0; i < 32; ++i)
-	// {
-	// 	chifrFaux = messageChifrFaux[i];
-	// 	get_R16_L16(IP, chifrFaux, &R16Faux, &L16Faux);
-	//  printf("R16F= %lX  ", R16Faux);printf("L16F= %lX\n", L16Faux);
-	// 	unsigned long long mask = L16 ^ L16Faux;
-	// 	bin = bin64(mask);
-	// 	printf("%s\n", bin);
-	// 	free(bin);
-	// }
-	
-	
-	// free(binaire);
-	// free(ver);
-	// free(binDecimals);
-	// free(propa);
-	// free(R15binaire);
-	// free(R15Fauxbinaire);
-	// free(R15binaireE);
-	// free(R15FauxbinaireE);
-	// free(expanJuste);
-	// free(expanFaux);
-	// free(R15bin);
+
 	free(cle1);
 	free(cle2);
 	free(cleK);
 
+	return cleAttribuer;
 }
 
 

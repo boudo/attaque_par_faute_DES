@@ -61,9 +61,14 @@ int main(int argc, char const *argv[])
 	// get_R16_L16(t, &R16, &L16);
 	// printf("%lX\n", R16);
 	// printf("%lX\n", L16);
-
-	attaqueSbox();
+	unsigned long long cleK16;
+	unsigned long long maCleK;
+	cleK16 = attaqueSbox();
+	maCleK = cleK(cleK16);
+	printf("voici ma cleK = %llX\n", maCleK);
 	// printf("%d\n", puissance(2, 5));
 	printf("\ntout marche bien\n");
 	return 0;
 }
+
+//D389CE169EF1D398
